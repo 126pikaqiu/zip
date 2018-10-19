@@ -31,7 +31,7 @@ public class LZipOutputStream extends OutputStream {
         inflater.init();
         //写入了文件的内容，文件应该含有 文件名（含文件夹内部相对路径） +  huffman tree + 文件内容
         objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(nextEntry);//写入文件名含绝对路径
+        objectOutputStream.writeObject(pwdName(nextEntry));//写入加密后的文件名含绝对路径
         objectOutputStream.writeObject(inflater.getChars());//写入字符集
     }
 
@@ -55,5 +55,18 @@ public class LZipOutputStream extends OutputStream {
         fileOutputStream.close();
         super.close();
     }
+
+    String pwdName(String name){//加密文件名，采用异或加密的方式
+        int now;
+        int start = now = name.charAt(0) + name.length();
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < name.length(); i++){
+            now ^= name.charAt(i);
+            result.append((char) now);
+        }
+        result.append((char)start);
+        return result.toString();
+    }
+
 
 }

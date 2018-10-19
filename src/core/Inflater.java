@@ -47,13 +47,12 @@ class Inflater {
     }
 
     Object[] uncompress(byte[] bytes,long len){//解码
-        System.out.println(lengthzips);
         lengthzips = lengthzips - len;
         Node now = root;
         if(left != null){
             now = left;
         }
-        byte []bytes1 = new byte[2048];
+        byte []bytes1 = new byte[READSIZE];
         int k = 0;
         for (int i = 0; i < len; i++) {
             byte aByte = bytes[i];
@@ -74,6 +73,11 @@ class Inflater {
                             now = gitBit(j, aByte) == 0 ? root.getLeftChild() : root.getRightChild();
                         }
                         if(j == 8){
+                            if(k == bytes1.length){
+                                byte [] temp = new byte[bytes1.length * 2];
+                                System.arraycopy(bytes1,0,temp,0,bytes1.length);
+                                bytes1 = temp;
+                            }
                             bytes1[k++] = (byte)(now.getKey() - 128);
                             left = null;
                         }
@@ -96,6 +100,11 @@ class Inflater {
                         if(i == len - 1 && now.getKey() == 'ā' && j == 8){
                             left = now;
                         }else if(i == len - 1 && j == 8){
+                            if(k == bytes1.length){
+                                byte [] temp = new byte[bytes1.length * 2];
+                                System.arraycopy(bytes1,0,temp,0,bytes1.length);
+                                bytes1 = temp;
+                            }
                             bytes1[k++] = (byte)(now.getKey() - 128);
                             left = null;
                         }
@@ -156,12 +165,6 @@ class Inflater {
 
     void setHuffmanTreeNodes(Object tree){//获得字符集
         chars = (long [])tree;
-//        for(int i = 0; i < chars.length; i++){
-//            if(chars[i] != 0){
-//                System.out.print(i + " ");
-//            }
-//        }
-//        System.out.println();
         dequeue();
         creatHuffman();
     }

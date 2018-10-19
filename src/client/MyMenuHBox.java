@@ -35,4 +35,28 @@ class MyMenuHBox extends HBox {
         //add file menu
         this.getChildren().addAll(btCompress, btUncompress, btDelete, btPwd, btAutoCom, btKit);
     }
+
+    static String pwdName(String name){//加密文件名，采用异或加密的方式
+        int now;
+        int start = now = name.charAt(0) + name.length();
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < name.length(); i++){
+            start ^= name.charAt(i);
+            result.append((char) start);
+        }
+        result.append((char)now);
+        return result.toString();
+    }
+
+    static String unpwdName(String name){//解密文件名
+        int now;
+        int start = now = name.charAt(name.length() - 1);
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < name.length(); i++){
+            start ^= name.charAt(i);
+            result.append((char) start);
+        }
+        result.append((char)now);
+        return result.toString();
+    }
 }

@@ -15,7 +15,6 @@ import java.io.IOException;
 
 public class Main extends Application{
     private Stage stage;
-    private MyMenuHBox myMenuHBox;
     private File selectedFile;
     private String zipFilePath;
     private String sourceFilePath;
@@ -30,7 +29,7 @@ public class Main extends Application{
 
     private void initFrame(Stage primaryStage){
         stage.getIcons().add(new Image("file:src/resource/logo.jpg"));
-        myMenuHBox = new MyMenuHBox(this);
+        MyMenuHBox myMenuHBox = new MyMenuHBox(this);
         stage.setMinWidth(1030);//height 130
         stage.setHeight(650);
 
@@ -68,7 +67,7 @@ public class Main extends Application{
             String cwd = System.getProperty("user.dir");
             File file = new File(cwd);
             fileChooser.setInitialDirectory(file);
-            selectedFile = fileChooser.showOpenDialog(fileStage);
+            selectedFile = fileChooser.showOpenDialog(null);
             if(selectedFile != null){
                 showSureZipStage(selectedFile.getAbsolutePath());
             }
@@ -81,7 +80,7 @@ public class Main extends Application{
             String cwd = System.getProperty("user.dir");
             File file = new File(cwd);
             folderChooser.setInitialDirectory(file);
-            selectedFile = folderChooser.showDialog(fileStage);
+            selectedFile = folderChooser.showDialog(null);
             if(selectedFile != null){
                 showSureZipStage(selectedFile.getAbsolutePath());
             }
@@ -98,7 +97,7 @@ public class Main extends Application{
         stage.show();
     }
 
-    void showSureZipStage(String path){
+    private void showSureZipStage(String path){
         sourceFilePath = path;
         int len = 0;
         int start = 0;
@@ -141,7 +140,7 @@ public class Main extends Application{
             Stage fileStage = null;
             DirectoryChooser folderChooser = new DirectoryChooser();
             folderChooser.setTitle("真好压-选择目录");
-            selectedFile = folderChooser.showDialog(fileStage);
+            selectedFile = folderChooser.showDialog(null);
             if(selectedFile != null){
                 zipFilePath = selectedFile.getAbsolutePath() + "\\" + tfpath.getText();//确定压缩后的路径
             }
@@ -173,7 +172,7 @@ public class Main extends Application{
             File file = new File(cwd);
             fileChooser.setInitialDirectory(file);
             fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("ZIP FILES","*.lzip"));
-            selectedFile = fileChooser.showOpenDialog(fileStage);
+            selectedFile = fileChooser.showOpenDialog(null);
             if(selectedFile != null){
                 zip = new Zip(selectedFile.getAbsolutePath());
                 zip.unzip();
