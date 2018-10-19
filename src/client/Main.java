@@ -19,7 +19,7 @@ public class Main extends Application{
     private File selectedFile;
     private String zipFilePath;
     private String sourceFilePath;
-//    private Stage sure;
+    private Zip zip;
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = new Stage();
@@ -109,11 +109,11 @@ public class Main extends Application{
                 start = i;
             }
         }
-        zipFilePath = path.substring(0,len) + ".zip";
+        zipFilePath = path.substring(0,len) + ".lzip";
         if(len == 0){
-            path = path + ".zip";//文件夹
+            path = path + ".lzip";//文件夹
         }else{
-            path = path.substring(start + 1, len) + ".zip";
+            path = path.substring(start + 1, len) + ".lzip";
         }
         Stage stage = new Stage();
         stage.setResizable(false);
@@ -149,12 +149,13 @@ public class Main extends Application{
         hBox2.getChildren().addAll(label,tfpath,btChooseFolder);
         Button btOk = new Button("确认压缩");
         btOk.setOnMouseClicked(event -> {
-            Zip zip = new Zip(zipFilePath,sourceFilePath);
+            zip = new Zip(zipFilePath,sourceFilePath);
             try {
                 zip.zip();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            stage.close();
         });
         hBox2.setPadding(new Insets(0,20,0,120));
         hBox3.setPadding(new Insets(0,20,0,300));
@@ -171,10 +172,10 @@ public class Main extends Application{
             String cwd = System.getProperty("user.dir");
             File file = new File(cwd);
             fileChooser.setInitialDirectory(file);
-            fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("ZIP FILES","*.zip"));
+            fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("ZIP FILES","*.lzip"));
             selectedFile = fileChooser.showOpenDialog(fileStage);
             if(selectedFile != null){
-                Zip zip = new Zip(selectedFile.getAbsolutePath());
+                zip = new Zip(selectedFile.getAbsolutePath());
                 zip.unzip();
             }
     }

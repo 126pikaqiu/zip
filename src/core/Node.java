@@ -5,19 +5,19 @@ import java.io.Serializable;
 class Node implements Serializable{
     private Node leftChild = null;
     private Node rightChild = null;
-    private int weight = 0;
-    private String key;
+    private long weight = 0;
+    private char key = 'ā';//标记字符
     Node(){ }
-    Node(String key,int weight){
+    Node(char key,long weight){
         this.key = key;
         this.weight = weight;
     }
 
-    String getKey(){
+    char getKey(){
         return key;
     }
 
-    int getWeight(){
+    long getWeight(){
         return weight;
     }
 
@@ -37,7 +37,7 @@ class Node implements Serializable{
         this.rightChild = node;
     }
 
-    void setWeight(int weight){
+    void setWeight(long weight){
         this.weight = weight;
     }
 }
