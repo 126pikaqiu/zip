@@ -32,9 +32,7 @@ public class Main extends Application{
         MyMenuHBox myMenuHBox = new MyMenuHBox(this);
         stage.setMinWidth(1030);//height 130
         stage.setHeight(650);
-
         HBox hBox = new HBox(stage.getWidth());
-
         hBox.getChildren().add(myMenuHBox);
         hBox.setId("myhbox");
         hBox.setPadding(new Insets(20,10,10,10));
@@ -61,7 +59,6 @@ public class Main extends Application{
         Button btChooseFolder = new Button("选择文件夹");
         btChoose.setOnMouseClicked(event -> {
             stage.close();
-            Stage fileStage = null;
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("真好压-选择文件");
             String cwd = System.getProperty("user.dir");
@@ -83,6 +80,7 @@ public class Main extends Application{
             selectedFile = folderChooser.showDialog(null);
             if(selectedFile != null){
                 showSureZipStage(selectedFile.getAbsolutePath());
+                System.out.println(selectedFile.getAbsolutePath());
             }
         });
         Pane pan = new Pane();
@@ -110,7 +108,8 @@ public class Main extends Application{
         }
         zipFilePath = path.substring(0,len) + ".lzip";
         if(len == 0){
-            path = path + ".lzip";//文件夹
+            zipFilePath = path  + ".lzip";
+            path = path.substring(start + 1,path.length()) + ".lzip";//文件夹
         }else{
             path = path.substring(start + 1, len) + ".lzip";
         }
@@ -137,7 +136,6 @@ public class Main extends Application{
         TextField tfpath = new TextField(path);
         Button btChooseFolder = new Button("选择目录");
         btChooseFolder.setOnMouseClicked(event -> {
-            Stage fileStage = null;
             DirectoryChooser folderChooser = new DirectoryChooser();
             folderChooser.setTitle("真好压-选择目录");
             selectedFile = folderChooser.showDialog(null);

@@ -43,7 +43,8 @@ public class Zip {
         File sourcefile = new File(sourceFileName);//创建文件句柄
         LZipOutputStream out = new LZipOutputStream(new File(zipFileName));
         long time1 = System.currentTimeMillis();
-        compress(out,sourcefile,sourceFileName);//压缩文件
+        compress(out,sourcefile,sourcefile.getName());//压缩文件
+        out.close();
         long time2 = System.currentTimeMillis();
         System.out.println( "压缩时间" + (time2 - time1));
     }
@@ -70,12 +71,12 @@ public class Zip {
             assert flist != null;
             if(flist.length==0)//如果文件夹为空，则只需在目的地zip文件中写入一个目录进入点
             {
-                zos.putNextEntry(  base+"/" );
+                zos.putNextEntry(  base+"\\",0 );//0表示空文件夹
             }
             else//如果文件夹不为空，则递归调用compress，文件夹中的每一个文件（或文件夹）进行压缩
             {
                 for (File aFlist : flist) {
-                    compress(zos, aFlist, base + "/" + aFlist.getName());
+                    compress(zos, aFlist, base + "\\" + aFlist.getName());
                 }
             }
         }
@@ -88,15 +89,14 @@ public class Zip {
             while ((len = fis1.read(buf)) != -1) {
                 zos.scan(buf,  len);//扫描文件
             }
-            zos.putNextEntry(base);// 建立一个目录进入点
+            zos.putNextEntry(base,1);// 建立一个目录进入点,1表示文件
             fis1.close();
             FileInputStream fis2 = new FileInputStream(sourceFile);
             while ((len = fis2.read(buf)) != -1) {
                 zos.write(buf, 0, len);//写入文件
             }
+            zos.temp2file();//写入文件头，临时文件到zip里面
             fis2.close();
-            zos.close();
-
         }
     }
 

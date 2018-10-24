@@ -12,8 +12,6 @@ public class LZipOutputStream extends OutputStream {
     LZipOutputStream(File file) throws FileNotFoundException {
         sourceFile = file;
         fileOutputStream = new FileOutputStream(file);
-        tempFile = new File(file.getAbsolutePath().replace(file.getName(),"$" + file.getName()));
-        tempFileOutputStream = new FileOutputStream(tempFile);
     }
 
     @Override
@@ -27,12 +25,21 @@ public class LZipOutputStream extends OutputStream {
         fileOutputStream.write(b);
     }
 
-    void putNextEntry(String nextEntry) throws IOException {
-        inflater.init();
-        //写入了文件的内容，文件应该含有 文件名（含文件夹内部相对路径） +  huffman tree + 文件内容
-        objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(pwdName(nextEntry));//写入加密后的文件名含绝对路径
-        objectOutputStream.writeObject(inflater.getChars());//写入字符集
+    void putNextEntry(String nextEntry,int type) throws IOException {
+        if(type == 1){
+            tempFile = new File(sourceFile.getAbsolutePath().replace(sourceFile.getName(),"$" + sourceFile.getName()));//创建临时文件
+            tempFileOutputStream = new FileOutputStream(tempFile);
+            inflater.init();
+            //写入了文件的内容，文件应该含有 文件名（含文件夹内部相对路径） +  huffman tree + 文件内容
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeByte(1);//写入类型1
+            objectOutputStream.writeObject(pwdName(nextEntry));//写入加密后的文件名不含绝对路径,若为文件夹，含内部相对路径
+            objectOutputStream.writeObject(inflater.getChars());//写入字符集
+        }else{
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);//空文件夹只需要写入类型0  文件名
+            objectOutputStream.writeByte(0);
+            objectOutputStream.writeObject(pwdName(nextEntry));//写入加密后的文件名含绝对路径
+        }
     }
 
     void scan(byte []bytes,int len){//扫描文件获得权值
@@ -40,6 +47,12 @@ public class LZipOutputStream extends OutputStream {
     }
 
     public void close() throws IOException {
+        objectOutputStream.writeByte(2);//作为标记
+        fileOutputStream.close();
+        super.close();
+    }
+
+    void temp2file() throws IOException {
         tempFileOutputStream.close();
         objectOutputStream.writeObject(inflater.getLeftNumber());//写入模8后的bit位
         objectOutputStream.writeObject(inflater.getLength());//写入字节数
@@ -51,9 +64,6 @@ public class LZipOutputStream extends OutputStream {
         }
         fileInputStream.close();
         tempFile.delete();
-        objectOutputStream.writeObject(null);//作为标记
-        fileOutputStream.close();
-        super.close();
     }
 
     String pwdName(String name){//加密文件名，采用异或加密的方式
